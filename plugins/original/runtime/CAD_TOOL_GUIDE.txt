@@ -1,0 +1,40 @@
+DSH CAD 插件 v2：通用工具约定
+
+所有尺寸必须由当前 DSH 从本任务原图读取或推导。下述工具没有任何已有零件的尺寸答案。
+
+一、cad_contract(path)
+先 cad_write 保存 agent/source-contract.json，再调用此工具。JSON 字段：
+units="mm"；paper_mm=[纸宽,纸高]；views 为数组，每项包含 id、block（实际图块名）、scale（实际插入倍率）、source={path:源图相对路径,region:[左,上,右,下]}。
+dimensions 为数组，每项包含 id、view（上述视图id）、kind、value、unit、source。
+kind 只能为 controlled/reference/derived/uncertain。controlled 为受控名义值；reference 为原图括号参考值；derived 必须另写 expression，标明公式及输入；uncertain 可令 value=null，并写 critical=true/false。
+source.region 使用 0..1 归一化坐标，定位文字所在原图区域。公差可附 tolerance={plus:上偏差,minus:下偏差}，不得丢失正负号。
+本工具检查格式与来源绑定，不会替你确认读图正确。控制值有不确定项时必须补图澄清，不能用猜测越过检查。
+
+二、cad_feature(path)
+目前提供 v_groove_chamfer_runout 通用特征，解决槽端与倒角面交线漏画、圆角底被误改成尖底、阵列端部缺失。
+先保存 agent/feature_<id>.json：
+id: 唯一英文字母开头短名称；type="v_groove_chamfer_runout"；
+width_direction="global_x"（严格定义为固定 Y 截面沿全局 X 测量的槽口宽，若原图标的是垂直于斜槽轴的宽度，先明确换算，不能直接套入）；
+opening_mm: 槽口宽；included_angle_deg: V夹角；root_radius_mm: 实际槽底圆角，明确无圆角才填0；
+chamfer_drop_per_mm: 倒角平面沿Y每前进1mm下降多少Z，必须正值；mouth_y_mm: 倒角起点Y；axis_tilt_deg: 槽轴相对Y的倾角；centers_mm: Y=0处各槽中心X列表；chord_error_mm: 曲线投影弦误差上限，默认0.0001mm。
+几何约定：平面 z=-chamfer_drop_per_mm*(y-mouth_y_mm)，槽轴 x=center+y*tan(axis_tilt_deg)。工具求整个槽剖面与平面交线，不按照片画装饰三角形。圆角截面保留真实ARC；斜投影圆角以受控弦误差多段线表达，并返回实际底深与理论尖底深，两者不得混用。
+返回 .host/features/<id>.dxf 和 JSON 校验记录；DXF 含 F_<id>_PLAN、F_<id>_SECTION 两个毫米制1:1图块。可以用 ezdxf.addons.Importer(source_doc,target_doc).import_blocks([...]); importer.finalize() 导入，随后 add_blockref 插入你的完整视图。两份DXF都导入同一份基础图块。
+这只是一个可复用的几何算子，未覆盖任意机械零件、任意曲面或任意槽形。其他形状继续自己用 cad_python 建模，并给出可测量证据。工具不判断该图是否应使用这个特征，选择与参数仍由你对原图负责。
+
+三、各视图只生成一套基础几何
+图块自身保持毫米制1:1。model_1to1.dxf 使用相同名称与相同几何图块并按1倍插入；drawing.dxf 使用原图规定倍率插入。尺寸与文字在工程图纸面坐标标注，不把它们写进比较基础轮廓的图块。不得为看清细节改原图明确比例。
+每类细小特征保存 artifacts/feature-checks.json：source_region、view、feature_kind、expected_count及依据、actual_count、entity/coordinate evidence、PDF和LibreCAD局部路径、status。尖端、倒角交线、圆弧相切、隐线、重复首尾都检查。不存在的种类记 not_applicable 并给依据，不添加原图没有的尖。
+
+四、cad_preflight → cad_review → cad_deliver
+导出完整 drawing.dxf、model_1to1.dxf 后调用 cad_export，再查看整页及PDF向量局部。cad_preflight 检查毫米单位、DXF结构、每个视图实际倍率、两份DXF基础几何一致、生成特征未被删改，以及内网读图记录。
+preflight通过后调用 cad_review。它运行一个新的原生DSH验收会话，只给全部原图和冻结候选，不给你的尺寸答案当真值。它自行测量实体、核查原图，返回具体证据。失败时你修改代码与实体，重新导出、preflight，再review。不能只把正确数字改到标注文字里。
+默认同一输入版本最多4次独立复核；仍不能判定时提一个聚焦的问题或请求对应局部图，并保留结果。严禁无限裁标题栏或把已有负面证据通过改结论消掉。
+最后 cad_deliver 只接受与当前文件哈希、当前输入版本相同的通过报告。它冻结DXF/PDF/预览与验收记录。你再 cad_view 展示整页及关键局部，给出绝对文件链接。
+
+五、桌面操作
+用户在原生DSH聊天上传同一零件的一张或多张图后，cad_open_task 自动读取本对话真实附件，不需要用户抄文件路径。后续补图和一句话修改调用 cad_open_task(mode="append")，保留前版并递增输入版本；普通继续/进度消息不重开任务、不重复导入旧附件。换零件建议新建DSH聊天。
+生产模型固定DeepSeek，内网视觉为辅助意见，审图仍是独立原生DSH会话。Codex不参与每张图的读图、建模或验收。
+
+
+PDF线宽与长度的测量单位（通用规则）：
+PyMuPDF 的 get_drawings() 中 width、rect、点坐标使用 pt；72 pt = 25.4 mm，毫米值必须乘 25.4/72。例如 1.44 pt 约为 0.508 mm，不能写成 1.44 mm，也不能因此推断导出放大线宽。DXF lineweight 的非负整数以 1/100 mm 表示，负数表示继承/默认；不支持的整数可能被库规范化，保存后重新读取实际值。测量记录同时保留 raw_width_pt、converted_width_mm、实体/图层有效线宽、PDF页尺寸和采样区域。位图测量需给渲染DPI及像素/mm换算，不能把缩略图像素当真实尺寸。发现黑带时，分别查重合实体、真实线间距、有效笔宽与预览采样；调高预览分辨率不能掩盖实际PDF几何/线宽错误，不得修改原图明确比例。此规则不提供任何零件尺寸或通过结论。

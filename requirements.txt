@@ -1,0 +1,6 @@
+ezdxf==1.4.5
+PyMuPDF
+Pillow
+numpy
+matplotlib
+fonttools

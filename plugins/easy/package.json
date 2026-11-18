@@ -1,0 +1,33 @@
+{
+  "name": "@local/dsh-cad-easy",
+  "version": "1.0.0",
+  "description": "上传图纸，说一句“帮我做成CAD”；自动读图、建模、独立审图和返修，交付预览、DXF、PDF。",
+  "private": true,
+  "type": "module",
+  "main": "plugin.mjs",
+  "icon": "./icon.svg",
+  "files": [
+    "plugin.mjs",
+    "locale",
+    "icon.svg",
+    "cordis.patch.yml",
+    "runtime/*.mjs",
+    "runtime/*.py",
+    "runtime/*.txt",
+    "runtime/*.yml",
+    "runtime/settings.json",
+    "runtime/settings.example.json",
+    "EASY_ENTRY.txt"
+  ],
+  "exports": {
+    ".": "./plugin.mjs",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "cordis.patch.yml"
+    }
+  }
+}

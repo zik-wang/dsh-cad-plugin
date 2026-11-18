@@ -1,0 +1,33 @@
+{
+  "name": "@local/dsh-cad-cost-control",
+  "version": "0.3.6",
+  "description": "直接读原图与独立DSH审图，无内网依赖；每对话10元预算，不额外限制单次输出，保留审图限次。",
+  "private": true,
+  "type": "module",
+  "main": "plugin-v036.mjs",
+  "icon": "./icon.svg",
+  "files": [
+    "plugin.mjs",
+    "locale",
+    "icon.svg",
+    "cordis.patch.yml",
+    "runtime/*.mjs",
+    "runtime/*.py",
+    "runtime/*.txt",
+    "runtime/*.yml",
+    "runtime/settings.json",
+    "runtime/settings.example.json",
+    "plugin-v036.mjs"
+  ],
+  "exports": {
+    ".": "./plugin-v036.mjs",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "cordis.patch.yml"
+    }
+  }
+}

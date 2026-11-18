@@ -1,0 +1,35 @@
+- id: agent-default-model
+  config:
+    provider: deepseek-official
+    model: deepseek-flash
+    reasoningEffort: high
+- id: session-title-llm
+  disabled: true
+- id: session-telemetry-otel
+  disabled: true
+- id: tools
+  config:
+    mode: native
+- id: tool-pwsh
+  disabled: true
+- id: tool-bash
+  disabled: true
+- id: tool-fs
+  disabled: true
+- id: tool-fs-search
+  disabled: true
+- id: tool-web
+  disabled: true
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+- id: tool-workflow
+  disabled: true
+- id: agent-instructions
+  disabled: true
+- id: skill-filesystem
+  disabled: true
+- insert:
+    - id: independent-cad-tools
+      name: '__PLUGIN__'

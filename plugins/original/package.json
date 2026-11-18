@@ -1,0 +1,33 @@
+{
+  "name": "@local/dsh-cad-workflow",
+  "version": "0.2.0",
+  "description": "图片转 CAD：原图识读、独立建模、DXF/PDF 导出、自检返修与可追溯交付。",
+  "private": true,
+  "type": "module",
+  "main": "plugin.mjs",
+  "icon": "./icon.svg",
+  "files": [
+    "plugin.mjs",
+    "locale",
+    "icon.svg",
+    "cordis.patch.yml",
+    "runtime/*.mjs",
+    "runtime/*.py",
+    "runtime/*.txt",
+    "runtime/*.yml",
+    "runtime/settings.json",
+    "runtime/settings.example.json",
+    "launch.mjs"
+  ],
+  "exports": {
+    ".": "./plugin.mjs",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "cordis.patch.yml"
+    }
+  }
+}

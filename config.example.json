@@ -1,0 +1,7 @@
+{
+  "dshExecutable": "D:/Apps/DSH/DeepSeek Harness.exe",
+  "python": "C:/Python312/python.exe",
+  "libreCAD": "D:/Apps/LibreCAD/LibreCAD.exe",
+  "pythonPackages": "C:/Python312/Lib/site-packages",
+  "credentialFile": "D:/cad-private/deepseek.dpapi"
+}

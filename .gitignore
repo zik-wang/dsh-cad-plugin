@@ -1,0 +1,17 @@
+**/node_modules/
+**/__pycache__/
+**/state/
+**/jobs/
+**/cost-accounts/
+**/.host/
+**/private/
+**/*.dpapi
+**/.credentials*
+**/.env
+**/.env.*
+plugins/*/runtime/settings.json
+plugins/*/cordis.patch.yml
+config.local.json
+.venv/
+pydeps/
+*.tmp

@@ -1,0 +1,15 @@
+{
+  "dshExecutable": "CONFIGURE_ON_THIS_MACHINE",
+  "python": "CONFIGURE_ON_THIS_MACHINE",
+  "libreCAD": "CONFIGURE_ON_THIS_MACHINE",
+  "pythonPackages": "CONFIGURE_ON_THIS_MACHINE",
+  "deepseekBaseURL": "https://api.deepseek.com",
+  "deepseekModel": "deepseek-flash",
+  "workflow": {
+    "maxRepairRounds": 3,
+    "maxReviewAttempts": 4
+  },
+  "credentialFile": "CONFIGURE_ON_THIS_MACHINE",
+  "stateDirectory": "CONFIGURE_ON_THIS_MACHINE",
+  "desktopDebugPort": 9232
+}
